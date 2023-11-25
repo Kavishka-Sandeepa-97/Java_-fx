@@ -1,14 +1,21 @@
 package Controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class CustomerFormController {
+
+    public void initialize() {
+
+    }
 
     @FXML
     private TextField textID;
@@ -63,5 +70,6 @@ public class CustomerFormController {
     void updateButtonOnAction(ActionEvent event) {
 
     }
+
 
 }
