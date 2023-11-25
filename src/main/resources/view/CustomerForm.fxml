@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Controller.CustomerFormController"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane prefHeight="400.0" prefWidth="675.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.CustomerFormController">
+   <children>
+      <TextField fx:id="textID" layoutX="43.0" layoutY="53.0" prefHeight="25.0" prefWidth="104.0" />
+      <TextField fx:id="textName" layoutX="164.0" layoutY="53.0" />
+      <TextField fx:id="textAddress" layoutX="330.0" layoutY="53.0" prefHeight="25.0" prefWidth="172.0" />
+      <TextField fx:id="textSalary" layoutX="524.0" layoutY="53.0" prefHeight="25.0" prefWidth="119.0" />
+      <Label alignment="TOP_LEFT" layoutX="43.0" layoutY="22.0" prefHeight="18.0" prefWidth="92.0" text="Customer ID" textOverrun="CLIP">
+         <font>
+            <Font name="Bodoni MT Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label alignment="TOP_LEFT" layoutX="164.0" layoutY="22.0" prefHeight="18.0" prefWidth="130.0" text="Customer Name" textOverrun="CLIP">
+         <font>
+            <Font name="Bodoni MT Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label alignment="TOP_LEFT" layoutX="330.0" layoutY="22.0" prefHeight="18.0" prefWidth="139.0" text="Customer Address" textOverrun="CLIP">
+         <font>
+            <Font name="Bodoni MT Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label alignment="TOP_LEFT" layoutX="524.0" layoutY="22.0" prefHeight="18.0" prefWidth="119.0" text="Customer Salary" textOverrun="CLIP">
+         <font>
+            <Font name="Bodoni MT Bold" size="15.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tblCustomer" layoutX="28.0" layoutY="144.0" prefHeight="208.0" prefWidth="618.0">
+        <columns>
+          <TableColumn fx:id="colId" prefWidth="94.0" text="ID" />
+          <TableColumn fx:id="colName" prefWidth="131.0" text="Name" />
+            <TableColumn fx:id="colSalary" prefWidth="131.0" text="Customer Salary" />
+            <TableColumn fx:id="colAddress" prefWidth="136.0" text="Customer Address" />
+            <TableColumn fx:id="colOption" prefWidth="111.0" text="Option" />
+        </columns>
+      </TableView>
+      <Button fx:id="btnReload" layoutX="585.0" layoutY="361.0" mnemonicParsing="false" onAction="#reloadButtonOnAction" text="Reload" />
+      <Button fx:id="btnUpdate" layoutX="524.0" layoutY="98.0" mnemonicParsing="false" onAction="#updateButtonOnAction" text="Update" />
+      <Button fx:id="btnSave" layoutX="584.0" layoutY="98.0" mnemonicParsing="false" onAction="#saveButtonOnAction" prefHeight="25.0" prefWidth="55.0" text="Save" />
+   </children>
 </AnchorPane>
