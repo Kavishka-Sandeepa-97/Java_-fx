@@ -72,4 +72,12 @@ public class CustomerFormController {
     }
 
 
+    public void reloadButtonOnAction(javafx.event.ActionEvent actionEvent) {
+    }
+
+    public void updateButtonOnAction(javafx.event.ActionEvent actionEvent) {
+    }
+
+    public void saveButtonOnAction(javafx.event.ActionEvent actionEvent) {
+    }
 }
