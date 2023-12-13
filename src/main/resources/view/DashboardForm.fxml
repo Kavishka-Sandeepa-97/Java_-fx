@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: royalblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.DashboardFormController">
    <children>
       <Button layoutX="52.0" layoutY="44.0" mnemonicParsing="false" onAction="#customerButton" text="Customer" />
+      <Label fx:id="lblTime" alignment="CENTER" layoutX="465.0" layoutY="23.0" prefHeight="42.0" prefWidth="107.0" style="-fx-background-color: brown;" text="Time" textFill="WHITE" />
+      <JFXButton layoutX="52.0" layoutY="115.0" onAction="#itemButtonOnAction" prefHeight="29.0" prefWidth="68.0" style="-fx-background-color: white;" text="Item" AnchorPane.rightAnchor="480.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <JFXButton fx:id="btnPlaceOrder" layoutX="52.0" layoutY="200.0" onAction="#PlaceOrderButtonOnAction" prefHeight="42.0" prefWidth="101.0" style="-fx-background-color: green;" text="Place ORDER" textFill="#fcf8f8">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font>
+      </JFXButton>
    </children>
+   <cursor>
+      <Cursor fx:constant="HAND" />
+   </cursor>
 </AnchorPane>

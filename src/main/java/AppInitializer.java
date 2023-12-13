@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class AppInitializer extends Application {
+public class  AppInitializer extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -18,5 +18,7 @@ public class AppInitializer extends Application {
         primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("view/DashboardForm.fxml")))
         );
         primaryStage.show();
+        primaryStage.centerOnScreen();
+        //primaryStage.setResizable(false);//usefull for when use anchor pane
     }
 }

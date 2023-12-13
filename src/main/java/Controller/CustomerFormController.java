@@ -1,21 +1,27 @@
 package Controller;
 
+import db.DBConnection;
+import dto.CustomerDto;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import dto.tm.CustomerTm;
+import model.CustomerModel;
+import model.impl.CustomerImpl;
 
-import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.sql.*;
+
+import static java.lang.Class.forName;
 
 public class CustomerFormController {
 
-    public void initialize() {
-
-    }
 
     @FXML
     private TextField textID;
@@ -30,7 +36,7 @@ public class CustomerFormController {
     private TextField textSalary;
 
     @FXML
-    private TableView<?> tblCustomer;
+    private TableView tblCustomer;
 
     @FXML
     private TableColumn colId;
@@ -56,28 +62,149 @@ public class CustomerFormController {
     @FXML
     private Button btnSave;
 
-    @FXML
-    void reloadButtonOnAction(ActionEvent event) {
+    private CustomerModel customerModel=new CustomerImpl();
 
+    public void initialize() {
+
+
+        loadCustomerTable();
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
+        colSalary.setCellValueFactory(new PropertyValueFactory<>("salary"));
+        colOption.setCellValueFactory(new PropertyValueFactory<>("btnDelete"));
+
+        tblCustomer.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            setData((CustomerTm) newValue);//we can use genarics above tblCustomer <CustomerTM>
+        });
     }
 
-    @FXML
-    void saveButtonOnAction(ActionEvent event) {
-
+    private void setData(CustomerTm newValue) {
+        if (newValue != null) {
+            textID.setEditable(false);
+            textID.setText(newValue.getId());
+            textName.setText(newValue.getName());
+            textAddress.setText(newValue.getAddress());
+            textSalary.setText(String.valueOf(newValue.getSalary()));
+        }
     }
 
-    @FXML
-    void updateButtonOnAction(ActionEvent event) {
+    private void loadCustomerTable() {
 
+        ObservableList<CustomerTm> tmList = FXCollections.observableArrayList();
+
+        try {
+            for (CustomerDto dto : customerModel.allCustomer()) {
+                Button btn=new Button("delete");
+                CustomerTm tm=new CustomerTm(
+                        dto.getId(),
+                        dto.getName(),
+                        dto.getAddress(),
+                        dto.getSalary(),
+                        btn
+                );
+                btn.setOnAction(actionEvent ->
+                        deleteCustomer(dto.getId()));
+                tmList.add(tm);
+            }
+            tblCustomer.setItems(tmList);
+        } catch (SQLException | ClassNotFoundException e){
+            throw new RuntimeException(e);
+        }
+        tblCustomer.setItems(tmList);
     }
 
+    private void deleteCustomer(String id) {
+        String sql = "delete  from customer where custId='" + id + "'";
+
+        try {
+
+            Connection conn =DBConnection.getInstance().getConnection();
+            Statement stm = conn.createStatement();
+            int res = stm.executeUpdate(sql);
+            if (res > 0) {
+                new Alert(Alert.AlertType.INFORMATION, "Customer Deleted").show();
+            } else {
+                new Alert(Alert.AlertType.INFORMATION, "Customer Not Deleted").show();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public void reloadButtonOnAction(javafx.event.ActionEvent actionEvent) {
+        loadCustomerTable();
+        clearField();
+    }
+
+    private void clearField() {
+        tblCustomer.refresh();//this is not usabale
+        textID.clear();
+        textName.clear();
+        textAddress.clear();
+        textSalary.clear();
     }
 
     public void updateButtonOnAction(javafx.event.ActionEvent actionEvent) {
+
+        String sql = "update Customer set custName='" + textName.getText() + "'," + "custAddress='" + textAddress.getText() + "'," + "Salary=" + textSalary.getText() + " where custid='" + textID.getText() + "'";
+
+        try {
+
+            Connection conn = DBConnection.getInstance().getConnection();
+            Statement stm = conn.createStatement();
+            int res = stm.executeUpdate(sql);
+            if (res > 0) {
+                new Alert(Alert.AlertType.INFORMATION, "Customer Updated").show();
+                loadCustomerTable();
+                clearField();
+
+            } else {
+                new Alert(Alert.AlertType.INFORMATION, "Not Updated").show();
+            }
+
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            new Alert(Alert.AlertType.INFORMATION, "Duplicate Entry").show();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void saveButtonOnAction(javafx.event.ActionEvent actionEvent) {
+
+        try {
+            boolean isSaved=customerModel.saveCustomer(new CustomerDto(
+                    textID.getText(), textName.getText(),textAddress.getText(),Double.parseDouble(textSalary.getText())
+            ));
+            if (isSaved) {
+                new Alert(Alert.AlertType.INFORMATION, "Customer Saved").show();
+                loadCustomerTable();
+                clearField();
+            } else {
+                new Alert(Alert.AlertType.INFORMATION, "Not Saved").show();
+            }
+
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            new Alert(Alert.AlertType.INFORMATION, "Duplicate Entry").show();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void backButtonOnAction(ActionEvent actionEvent) {
+        Stage stage = (Stage) textID.getScene().getWindow();
+        try {
+            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/DashboardForm.fxml"))));
+            stage.show();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
+
+
+
