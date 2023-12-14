@@ -12,10 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.stage.Stage;
@@ -38,6 +35,7 @@ public class PlaceOrderForm {
     public Button btnAddToCart;
     public Button btnPlaceOrder;
     public JFXTreeTableView<OrderTm> treeTable;
+    public Label lblTotalAmount;
     @FXML
     private JFXTextField txtName;
     @FXML
@@ -56,7 +54,8 @@ public class PlaceOrderForm {
     private ItemModel itemModel;
     private List<CustomerDto> custlist;
     private List<ItemDto> itemlist;
-    private ObservableList<OrderTm> tmList= FXCollections.observableArrayList();
+    private ObservableList<OrderTm> tmOrderList= FXCollections.observableArrayList();
+    private double totalAmount=0.00;
 
     public void initialize(){
 
@@ -134,38 +133,57 @@ public class PlaceOrderForm {
         }
     }
 
-    public void addToCartButtonOnAction(ActionEvent actionEvent) {
-
+    public void addToCartButtonOnAction(ActionEvent actionEvent){
 
         String id=cmbItemCode.getValue().toString();
         try {
             int qtyOnHand= itemModel.getItem(id).getQty();
+
             if(qtyOnHand<Integer.parseInt(txtQty.getText())){
-                new Alert(Alert.AlertType.ERROR,"Insuficent Quantity");
+                new Alert(Alert.AlertType.ERROR,"Insuficent Quantity").show();
+                return;
+            } if (Integer.parseInt(txtQty.getText())<1) {
+                new Alert(Alert.AlertType.ERROR,"Input Valid Quantity").show();
                 return;
             }
-            double amount=qtyOnHand*Double.parseDouble(txtUnitePrice.getText());
+            double amount=Integer.parseInt(txtQty.getText())*Double.parseDouble(txtUnitePrice.getText());
+
+            JFXButton btn=new JFXButton("Delete");
             OrderTm tm=new OrderTm(
                   cmbItemCode.getValue().toString(),
                   txtDesc.getText(),
                   Integer.parseInt(txtQty.getText()),
                   amount,
-                  new JFXButton("Delete")
+                 btn
             );
+            btn.setOnAction((actionEvent1) -> {
+                tmOrderList.remove(tm);
+                totalAmount-=tm.getAmount();
+                lblTotalAmount.setText(totalAmount+"");
+            } );
             boolean isExist= false;
-            for (OrderTm orderTm:tmList){
+
+            for (OrderTm orderTm:tmOrderList){
                 if (tm.getItemCode().equals(orderTm.getItemCode())){
+                    if (orderTm.getQty()+ tm.getQty()>qtyOnHand){
+                        new Alert(Alert.AlertType.ERROR,"Insuficent Quantity").show();
+                        return;
+                    }
                     orderTm.setQty(orderTm.getQty()+ tm.getQty());//???????**************
                     orderTm.setAmount(orderTm.getAmount()+ tm.getAmount());//?????**********
                     isExist=true;
+
                 }
             }
+
             if (!isExist){
-                tmList.add(tm);
+                tmOrderList.add(tm);
+                totalAmount += tm.getAmount();
             }
 
+            lblTotalAmount.setText(totalAmount+"");
 
-            TreeItem<OrderTm> treeItem = new RecursiveTreeItem<OrderTm>(tmList, RecursiveTreeObject::getChildren);
+            TreeItem<OrderTm> treeItem = new RecursiveTreeItem<OrderTm>(tmOrderList, RecursiveTreeObject::getChildren);
             treeTable.setRoot(treeItem);
             treeTable.setShowRoot(false);
 
@@ -174,9 +192,12 @@ public class PlaceOrderForm {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }catch (NumberFormatException exception){
+            new Alert(Alert.AlertType.ERROR,"Input Valid  Quantity").show();
         }
 
     }
+
 
     public void placeOrderButtonOnAction(ActionEvent actionEvent) {
 
