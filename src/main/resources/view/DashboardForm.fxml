@@ -7,11 +7,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: royalblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.DashboardFormController">
+<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #95A5A6;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.DashboardFormController">
    <children>
-      <Button layoutX="52.0" layoutY="44.0" mnemonicParsing="false" onAction="#customerButton" text="Customer" />
-      <Label fx:id="lblTime" alignment="CENTER" layoutX="465.0" layoutY="23.0" prefHeight="42.0" prefWidth="107.0" style="-fx-background-color: brown;" text="Time" textFill="WHITE" />
-      <JFXButton layoutX="52.0" layoutY="115.0" onAction="#itemButtonOnAction" prefHeight="29.0" prefWidth="68.0" style="-fx-background-color: white;" text="Item" AnchorPane.rightAnchor="480.0">
+      <Button layoutX="182.0" layoutY="92.0" mnemonicParsing="false" onAction="#customerButton" prefHeight="29.0" prefWidth="169.0" style="-fx-background-color: #0b9995;" text="Customer">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <Label fx:id="lblTime" alignment="CENTER" layoutX="465.0" layoutY="23.0" prefHeight="42.0" prefWidth="107.0" style="-fx-background-color: #F0B27A;" text="Time" textFill="WHITE" />
+      <JFXButton layoutX="182.0" layoutY="147.0" onAction="#itemButtonOnAction" prefHeight="29.0" prefWidth="169.0" style="-fx-background-color: #0b9995;" text="Item" AnchorPane.rightAnchor="249.0">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
@@ -19,11 +22,21 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </JFXButton>
-      <JFXButton fx:id="btnPlaceOrder" layoutX="52.0" layoutY="200.0" onAction="#PlaceOrderButtonOnAction" prefHeight="42.0" prefWidth="101.0" style="-fx-background-color: green;" text="Place ORDER" textFill="#fcf8f8">
+      <JFXButton fx:id="btnPlaceOrder" layoutX="183.0" layoutY="202.0" onAction="#PlaceOrderButtonOnAction" prefHeight="29.0" prefWidth="169.0" style="-fx-background-color: #0b9995;" text="Place ORDER">
          <font>
-            <Font name="Comic Sans MS" size="12.0" />
+            <Font name="System Bold" size="12.0" />
          </font>
       </JFXButton>
+      <JFXButton fx:id="OrderDetails" layoutX="182.0" layoutY="257.0" onAction="#orderDetailsOnAction" prefHeight="25.0" prefWidth="169.0" style="-fx-background-color: #0b9995;" text="OrderDetails">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <Label layoutX="196.0" layoutY="25.0" prefHeight="39.0" prefWidth="142.0" style="-fx-background-color: #CB4335;" text="THOGAKADE" textAlignment="JUSTIFY">
+         <font>
+            <Font name="Bernard MT Condensed" size="31.0" />
+         </font>
+      </Label>
    </children>
    <cursor>
       <Cursor fx:constant="HAND" />

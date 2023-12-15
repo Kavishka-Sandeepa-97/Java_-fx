@@ -6,7 +6,10 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import db.DBConnection;
+import dto.ItemDto;
 import dto.tm.CustomerTm;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,9 +23,12 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import dto.tm.ItemTm;
+import model.ItemModel;
+import model.impl.ItemModelImpl;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.function.Predicate;
 
 public class ItemForm {
 
@@ -70,9 +76,11 @@ public class ItemForm {
 
     @FXML
     private Button btnUpdate;
+    private ItemModel itemModel=new ItemModelImpl();
+
 
     @FXML
-  private void initialize(){
+  private void initialize() {
         loadItemTable();
         colItemCode.setCellValueFactory(new TreeItemPropertyValueFactory<>("itemCode"));
         colDescription.setCellValueFactory(new TreeItemPropertyValueFactory<>("desc"));
@@ -80,23 +88,55 @@ public class ItemForm {
         colQty.setCellValueFactory(new TreeItemPropertyValueFactory<>("qty"));
         colOption.setCellValueFactory(new TreeItemPropertyValueFactory<>("btn"));
 
+        txtSearch.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String newValue) {
+                treeTableView.setPredicate(new Predicate<TreeItem<ItemTm>>() {
+                    @Override
+                    public boolean test(TreeItem<ItemTm> treeItem) {
+                        return treeItem.getValue().getItemCode().contains(newValue) || treeItem.getValue().getDesc().contains(newValue);
+                    }
+                });
+            }
+        });
+
+          treeTableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+             setData(newValue);
+          });
+
+
     }
+    private void setData(TreeItem<ItemTm> newValue) {
+        if (newValue != null) {
+            ItemTm selectedItem = newValue.getValue();
+
+            // Now you can access the properties of the selected item
+            txtItemCode.setText( selectedItem.getItemCode());
+            txtDescription.setText( selectedItem.getDesc());
+            txtPrice.setText(selectedItem.getUnitePrice()+"");
+            txtQty.setText(selectedItem.getQty()+"");
+        }
+    }
+
     public void saveButtonOnAction(javafx.event.ActionEvent actionEvent) {
 
-        String sql = "insert into item values(?,?,?,?)";
-
-
+        boolean isSaved = false;
         try {
-            Connection conn = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
+            isSaved = itemModel.saveItem(new ItemDto(
+                   txtItemCode.getText(),
+                   txtDescription.getText(),
+                   Double.parseDouble(txtPrice.getText()),
+                   Integer.parseInt(txtQty.getText())
 
-            pstm.setString(1,txtItemCode.getText());
-            pstm.setString(2,txtDescription.getText());
-            pstm.setDouble(3,Double.parseDouble(txtPrice.getText()));
-            pstm.setInt(4,Integer.parseInt(txtQty.getText()));
-
-            int res = pstm.executeUpdate();
-            if (res > 0) {
+           ));
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            new Alert(Alert.AlertType.INFORMATION, "Duplicate Entry").show();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (isSaved) {
                 new Alert(Alert.AlertType.INFORMATION, "Item Saved").show();
                 loadItemTable();
                 clearField();
@@ -104,12 +144,8 @@ public class ItemForm {
                 new Alert(Alert.AlertType.INFORMATION, "Item Not Saved").show();
             }
 
-        } catch (SQLIntegrityConstraintViolationException ex) {
-            new Alert(Alert.AlertType.INFORMATION, "Duplicate Entry").show();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
         }
-    }
+
 
     private void clearField() {
         treeTableView.refresh();//this is not usabale
@@ -138,7 +174,7 @@ public class ItemForm {
                         btn
                 );
                 btn.setOnAction((actionEvent) -> {
-                    deleteItem(tm.getItemCode());
+                    deleteItem(txtItemCode.getText());
                 });
                 tmList.add(tm);
 
@@ -156,24 +192,23 @@ public class ItemForm {
     }
 
     private void deleteItem(String id) {
-        String sql = "delete  from Item  where  itemCode= ?";
-
+        boolean isDelete= false;
         try {
+            isDelete = itemModel.deleteItem(id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-            Connection conn =DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1,id);
-            int res = pstm.executeUpdate();
-            if (res > 0) {
+        if (isDelete) {
                 new Alert(Alert.AlertType.INFORMATION, "Item Deleted").show();
             } else {
                 new Alert(Alert.AlertType.INFORMATION, "Item Not Deleted").show();
             }
             loadItemTable();
             clearField();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
 
@@ -189,6 +224,23 @@ public class ItemForm {
     }
 
     public void updateButtonOnAction(javafx.event.ActionEvent actionEvent) {
-
+        boolean isUpdate = false;
+        try {
+            isUpdate = itemModel.updateItem(new ItemDto(
+                    txtItemCode.getText(),
+                    txtDescription.getText(),
+                    Double.parseDouble(txtPrice.getText()),
+                    Integer.parseInt(txtQty.getText())
+            ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (isUpdate){
+            new Alert(Alert.AlertType.INFORMATION,"Update Successfully");
+            clearField();
+            loadItemTable();
+        }else {  new Alert(Alert.AlertType.INFORMATION,"Not Updated");}
     }
 }

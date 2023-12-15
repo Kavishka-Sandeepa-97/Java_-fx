@@ -23,12 +23,24 @@ public class CustomerImpl implements CustomerModel {
             return res>0 ? true :false;
     }
     @Override
-    public boolean updateCustomer(CustomerDto dto) {
+    public boolean updateCustomer(CustomerDto dto) throws SQLException, ClassNotFoundException {
+        String sql = "update Customer set custName='" + dto.getName() + "'," + "custAddress='" + dto.getAddress() + "'," + "Salary=" + dto.getSalary() + " where custid='" + dto.getId() + "'";
+        Connection conn = DBConnection.getInstance().getConnection();
+        Statement stm = conn.createStatement();
+        int res = stm.executeUpdate(sql);
+        if (res>0)return true;
         return false;
     }
 
     @Override
-    public boolean deleteCustomer(String id) {
+    public boolean deleteCustomer(String id) throws SQLException, ClassNotFoundException {
+        String sql = "delete from customer where custId='" + id + "'";
+        Connection conn =DBConnection.getInstance().getConnection();
+        Statement stm = conn.createStatement();
+        int res = stm.executeUpdate(sql);
+        if (res>0){
+            return true;
+        }
         return false;
     }
 

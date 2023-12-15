@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderModelImpl implements OrderModel {
     @Override
@@ -60,5 +62,24 @@ public class OrderModelImpl implements OrderModel {
 
         return null;
     }
+
+    @Override
+    public List<OrderDto> allOrders() throws SQLException, ClassNotFoundException {
+        String sql="select * from orders";
+        List<OrderDto> list=new ArrayList<>();
+        Connection connection= DBConnection.getInstance().getConnection();
+        PreparedStatement pstm=connection.prepareStatement(sql);
+        ResultSet res=pstm.executeQuery();
+        while (res.next()){
+            list.add( new OrderDto(
+                    res.getString(1),
+                    res.getString(2),
+                    res.getString(3),
+                    null
+            ));
+        }
+        return list;
+    }
+
 
 }

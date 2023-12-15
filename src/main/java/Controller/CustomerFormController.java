@@ -115,21 +115,22 @@ public class CustomerFormController {
     }
 
     private void deleteCustomer(String id) {
-        String sql = "delete  from customer where custId='" + id + "'";
 
+        boolean res= false;
         try {
+            res = customerModel.deleteCustomer(id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-            Connection conn =DBConnection.getInstance().getConnection();
-            Statement stm = conn.createStatement();
-            int res = stm.executeUpdate(sql);
-            if (res > 0) {
+
+        if (res) {
                 new Alert(Alert.AlertType.INFORMATION, "Customer Deleted").show();
             } else {
                 new Alert(Alert.AlertType.INFORMATION, "Customer Not Deleted").show();
             }
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
@@ -147,15 +148,21 @@ public class CustomerFormController {
     }
 
     public void updateButtonOnAction(javafx.event.ActionEvent actionEvent) {
-
-        String sql = "update Customer set custName='" + textName.getText() + "'," + "custAddress='" + textAddress.getText() + "'," + "Salary=" + textSalary.getText() + " where custid='" + textID.getText() + "'";
-
+        boolean res;
         try {
+             res = customerModel.updateCustomer(new CustomerDto(
+                    textID.getText(),
+                    textName.getText(),
+                    textAddress.getText(),
+                    Double.parseDouble(textSalary.getText())
+            ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-            Connection conn = DBConnection.getInstance().getConnection();
-            Statement stm = conn.createStatement();
-            int res = stm.executeUpdate(sql);
-            if (res > 0) {
+        if(res){
                 new Alert(Alert.AlertType.INFORMATION, "Customer Updated").show();
                 loadCustomerTable();
                 clearField();
@@ -163,12 +170,6 @@ public class CustomerFormController {
             } else {
                 new Alert(Alert.AlertType.INFORMATION, "Not Updated").show();
             }
-
-        } catch (SQLIntegrityConstraintViolationException ex) {
-            new Alert(Alert.AlertType.INFORMATION, "Duplicate Entry").show();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 

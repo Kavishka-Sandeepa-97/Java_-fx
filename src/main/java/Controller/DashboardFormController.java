@@ -65,4 +65,15 @@ public class DashboardFormController {
             throw new RuntimeException(e);
         }
     }
+
+    public void orderDetailsOnAction(ActionEvent actionEvent) {
+        Stage stage=(Stage)pane.getScene().getWindow();
+        try {
+            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/OrderDetails.fxml"))));
+            stage.show();
+            stage.setTitle("Order Details Form");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

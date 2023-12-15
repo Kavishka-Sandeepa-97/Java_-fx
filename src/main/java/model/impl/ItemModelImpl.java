@@ -2,6 +2,7 @@ package model.impl;
 
 import db.DBConnection;
 import dto.ItemDto;
+import javafx.scene.control.Alert;
 import model.ItemModel;
 
 import java.sql.Connection;
@@ -15,16 +16,51 @@ public class ItemModelImpl implements ItemModel {
 
     @Override
     public boolean saveItem(ItemDto dto) throws SQLException, ClassNotFoundException {
-        return false;
+
+              String sql = "insert into item values(?,?,?,?)";
+
+            Connection conn = DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql);
+
+            pstm.setString(1,dto.getItemCode());
+            pstm.setString(2,dto.getDesc());
+            pstm.setDouble(3,dto.getUnitePrice());
+            pstm.setInt(4,dto.getQty());
+
+            int res = pstm.executeUpdate();
+            if (res>0){
+                return true;
+            }
+            return false;
+    }
+
+
+    @Override
+    public boolean updateItem(ItemDto dto) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE Item SET Description=?, UnitPrice=?, qtyOnHand=? WHERE itemCode=?";
+            Connection conn =DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql);
+            pstm.setString(1,dto.getDesc());
+            pstm.setString(2,String.valueOf(dto.getUnitePrice()));
+            pstm.setString(3,String.valueOf(dto.getQty()));
+            pstm.setString(4, dto.getItemCode());
+            int res = pstm.executeUpdate();
+            if (res > 0) {
+                return true;
+            }
+                return false;
+
     }
 
     @Override
-    public boolean updateItem(ItemDto dto) {
-        return false;
-    }
+    public boolean deleteItem(String id) throws SQLException, ClassNotFoundException {
+        String sql = "delete  from Item  where  itemCode= ?";
 
-    @Override
-    public boolean deleteItem(String id) {
+        Connection conn =DBConnection.getInstance().getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        pstm.setString(1,id);
+        int res = pstm.executeUpdate();
+        if(res>0) return true;
         return false;
     }
 
